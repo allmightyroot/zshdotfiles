@@ -8,4 +8,4 @@ then
 fi
 
 # Move vagrant home outside of /home
-VAGRANT_HOME=/data/vagrant
+export VAGRANT_HOME=/data/vagrant
