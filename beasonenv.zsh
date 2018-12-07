@@ -7,3 +7,5 @@ then
         export VIRTUALENVWRAPPER_VIRTUALENV="virtualenv-3.5"
 fi
 
+# Move vagrant home outside of /home
+VAGRANT_HOME=/data/vagrant
