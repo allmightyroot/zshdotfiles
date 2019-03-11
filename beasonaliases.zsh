@@ -1,3 +1,5 @@
+OS=$(lsb_release -si)
+
 # Beason's ZSH Aliases
 alias ssh="ssh -q"
 alias ls="ls -h --color=auto"
@@ -16,3 +18,9 @@ alias nfshomeumount="fusermount -u /data/nashome"
 # Misc
 alias geturl='wget -r --no-clobber --page-requisites --html-extension --convert-links'
 alias wx='curl wttr.in/MSP'
+
+#OS Specific aliases
+if [ "$OS" = "Ubuntu" ]; 
+then
+  alias gpg='/usr/bin/gpg2'
+fi
