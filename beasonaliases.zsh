@@ -20,7 +20,7 @@ alias geturl='wget -r --no-clobber --page-requisites --html-extension --convert-
 alias wx='curl wttr.in/MSP'
 
 #OS Specific aliases
-if [ "$OS" = "Ubuntu" ]; 
+if [ "$OS" = "Fedora" ]; 
 then
   alias gpg='/usr/bin/gpg2'
 fi
