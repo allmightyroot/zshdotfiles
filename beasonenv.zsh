@@ -6,16 +6,21 @@ export WORKON_HOME=$HOME/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON="$(command \which python3)"
 OS=$(lsb_release -si)
 
-if [ -f "/etc/redhat-release" ];
+if [ "$OS" = "Fedora" ];
 then
-        export VIRTUALENVWRAPPER_VIRTUALENV="virtualenv-3.5"
+        VIRTUALENV_PYTHON="/usr/bin/python3"
+        GPG_TTY="$(tty)"
+        SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)VIRTUALENV_PYTHON
+        export VIRTUALENV_PYTHON GPG_TTY SSH_AUTH_SOCK
+        gpgconf --launch gpg-agent
 fi
 
 if [ "$OS" = "Ubuntu" ]; 
 then
-        export VIRTUALENV_PYTHON="/usr/bin/python3"
-        export GPG_TTY="$(tty)"
-        export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+        VIRTUALENV_PYTHON="/usr/bin/python3"
+        GPG_TTY="$(tty)"
+        SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+        export VIRTUALENV_PYTHON GPG_TTY SSH_AUTH_SOCK
         gpgconf --launch gpg-agent
 fi
       
