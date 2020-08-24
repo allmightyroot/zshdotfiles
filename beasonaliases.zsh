@@ -4,6 +4,7 @@ OS=$(lsb_release -si)
 alias ssh="ssh -q"
 alias ls="ls -h --color=auto"
 alias docker="sudo docker"
+alias tf="terraform"
 
 # Luks stuff
 alias secbkopen="sudo cryptsetup luksOpen backups.lk securebackup"
