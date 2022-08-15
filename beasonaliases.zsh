@@ -1,4 +1,4 @@
-OS=$(lsb_release -si)
+
 
 # Beason's ZSH Aliases
 alias ssh="ssh -q"
@@ -20,8 +20,3 @@ alias nfshomeumount="fusermount -u /data/nashome"
 alias geturl='wget -r --no-clobber --page-requisites --html-extension --convert-links'
 alias wx='curl wttr.in/MSP'
 
-#OS Specific aliases
-if [ "$OS" = "Fedora" ]; 
-then
-  alias gpg='/usr/bin/gpg2'
-fi
