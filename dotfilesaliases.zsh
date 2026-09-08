@@ -47,4 +47,3 @@ alias getpage='wget --no-clobber --page-requisites --html-extension --convert-li
 
 # Download file with original filename
 alias get="curl -O -L"
-
