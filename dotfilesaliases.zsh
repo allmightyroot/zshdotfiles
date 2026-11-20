@@ -5,10 +5,10 @@ alias rm='rm -I'
 alias -- +x='chmod +x'
 alias x+='chmod +x'
 
-# Add an "alert" alias for long running commands.
+# Add an "alert" alias for long running commands (Linux only: needs notify-send).
 # Use like so:
 #   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+[[ $OSTYPE == linux* ]] && alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # My IP
 alias myip="curl -s https://4.ifcfg.me/"

@@ -3,13 +3,20 @@
 # Beason's ZSH Aliases
 alias ssh="ssh -q"
 alias ls="ls -h --color=auto"
-alias docker="sudo docker"
 
-# Luks stuff
-alias secbkopen="sudo cryptsetup luksOpen backups.lk securebackup"
-alias secbkclose="sudo cryptsetup luksClose securebackup"
-alias secbkmount="sudo mount /data/securebackup"
-alias secbkumount="sudo umount /data/securebackup"
+# OS-specific aliases
+if [[ $OSTYPE == darwin* ]]; then
+  # The real binary is buried inside the app bundle
+  alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+else
+  alias docker="sudo docker"
+
+  # Luks stuff
+  alias secbkopen="sudo cryptsetup luksOpen backups.lk securebackup"
+  alias secbkclose="sudo cryptsetup luksClose securebackup"
+  alias secbkmount="sudo mount /data/securebackup"
+  alias secbkumount="sudo umount /data/securebackup"
+fi
 
 # Misc
 # Download a page with assets, or mirror an entire site with -r
@@ -21,7 +28,7 @@ geturl() {
     wget --no-clobber --page-requisites --html-extension --convert-links --no-host-directories "$@"
   fi
 }
-alias wx='curl wttr.in/MSP'
+alias wx='curl "wttr.in/MSP?u"'  # ?u = US customary (English) units
 
 # Git
 # Check whether origin's push URLs match the GitLab/GitHub/Bitbucket 3-mirror pattern
