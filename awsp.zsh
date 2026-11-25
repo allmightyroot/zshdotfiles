@@ -2,7 +2,7 @@
 # because it has to export into the calling shell). Loaded by antidote as part of
 # this repo (allmightyroot/zshdotfiles), so it applies on Linux and the Mac alike.
 #
-#   awsp              list the profiles in ~/.aws/config and ~/.aws/credentials
+#   awsp list         list the profiles you can switch to (* marks the active one)
 #   awsp <profile>    switch to it
 #
 # SSO profiles (sso_session / sso_start_url in ~/.aws/config) get an
@@ -10,17 +10,31 @@
 # profiles (keys under [name] in ~/.aws/credentials) skip the login and just
 # have their identity checked. Either way, stale AWS_* credential variables are
 # cleared first so they can't override the profile.
+#
+# Over SSH, or on a Linux box with no display, the login uses the device-code
+# flow: it prints a URL and a code to open on any device with a browser, instead
+# of trying to open a browser locally. Force it anywhere with AWSP_DEVICE_CODE=1.
+_awsp_is_sso() {
+  [ -n "$(aws configure get sso_session --profile "$1" 2>/dev/null)" ] ||
+  [ -n "$(aws configure get sso_start_url --profile "$1" 2>/dev/null)" ]
+}
+
 awsp() {
-  if [ -z "$1" ]; then
-    echo "Usage: awsp <profile>" >&2
+  if [ -z "$1" ] || [ "$1" = "list" ]; then
+    local p kind
+    [ -z "$1" ] && echo "Usage: awsp <profile> | awsp list" >&2
     echo "Profiles:" >&2
-    aws configure list-profiles | sed 's/^/  /' >&2
-    return 1
+    for p in $(aws configure list-profiles); do
+      if _awsp_is_sso "$p"; then kind="sso"; else kind="static keys"; fi
+      printf '  %s %s (%s)\n' "$([ "$p" = "$AWS_PROFILE" ] && echo '*' || echo ' ')" "$p" "$kind" >&2
+    done
+    [ -z "$1" ] && return 1
+    return 0
   fi
 
   local profile="$1"
   if ! aws configure list-profiles | grep -qxF -- "$profile"; then
-    echo "awsp: no profile '$profile' (run awsp with no args to list them)" >&2
+    echo "awsp: no profile '$profile' (run: awsp list)" >&2
     return 1
   fi
 
@@ -29,10 +43,13 @@ awsp() {
   export AWS_REGION="$(aws configure get region --profile "$profile")"
   export AWS_DEFAULT_REGION="$AWS_REGION"
 
-  # Skip the browser login when the cached SSO session is still good.
-  if [ -n "$(aws configure get sso_session --profile "$profile" 2>/dev/null)" ] ||
-     [ -n "$(aws configure get sso_start_url --profile "$profile" 2>/dev/null)" ]; then
-    aws sts get-caller-identity >/dev/null 2>&1 || aws sso login --profile "$profile" || return 1
+  if _awsp_is_sso "$profile" && ! aws sts get-caller-identity >/dev/null 2>&1; then
+    local flags=()
+    if [ -n "$AWSP_DEVICE_CODE" ] || [ -n "$SSH_CONNECTION" ] ||
+       { [[ $OSTYPE == linux* ]] && [ -z "$DISPLAY$WAYLAND_DISPLAY" ]; }; then
+      flags=(--use-device-code --no-browser)
+    fi
+    aws sso login --profile "$profile" "${flags[@]}" || return 1
   fi
   aws sts get-caller-identity
 }
